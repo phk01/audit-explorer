@@ -1,0 +1,38 @@
+{
+  "name": "@audit/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "catalog:refresh": "tsx scripts/refresh-catalog.ts",
+    "sample:generate": "tsx scripts/generate-sample.ts"
+  },
+  "dependencies": {
+    "@audit/core": "workspace:*",
+    "@audit/ipdata": "workspace:*",
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/cors": "^11.0.1",
+    "@fastify/multipart": "^9.0.3",
+    "@fastify/rate-limit": "^10.3.0",
+    "@fastify/static": "^8.2.0",
+    "@types/stream-chain": "^2.1.0",
+    "argon2": "^0.44.0",
+    "csv-parse": "^6.1.0",
+    "fastify": "^5.6.1",
+    "pg": "^8.16.3",
+    "pg-copy-streams": "^7.0.0",
+    "stream-chain": "^4.2.6",
+    "stream-json": "^1.9.1",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.5",
+    "@types/pg-copy-streams": "^1.2.5",
+    "@types/stream-json": "^1.7.8"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "@audit/ipdata",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "data",
+    "scripts"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "prebuild": "node scripts/build-geo.mjs",
+    "geo:rebuild": "node scripts/build-geo.mjs --force"
+  },
+  "devDependencies": {
+    "@ip-location-db/geo-whois-asn-country": "^2.3.2026061719"
+  }
+}

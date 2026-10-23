@@ -1,0 +1,1149 @@
+{
+"generatedAt": "2026-10-23",
+"sources": [
+"https://learn.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-schema"
+],
+"activities": [
+{
+"operation": "AccessInvitationAccepted",
+"friendlyName": "Access Invitation Accepted",
+"description": "The recipient of an invitation to view or edit a shared file (or folder) has accessed the shared file by clicking on the link in the invitation.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "AccessInvitationCreated",
+"friendlyName": "Access Invitation Created",
+"description": "User sends an invitation to another person (inside or outside their organization) to view or edit a shared file or folder on a SharePoint or OneDrive site. The details of the event entry identifies the name of the file that was shared, the user the invitation was sent to, and the type of the sharing permission selected by the person who sent the invitation.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "AccessInvitationExpired",
+"friendlyName": "Access Invitation Expired",
+"description": "An invitation sent to an external user expires. By default, an invitation sent to a user outside of your organization expires after 7 days if the invitation isn't accepted.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "AccessInvitationRevoked",
+"friendlyName": "Access Invitation Revoked",
+"description": "The site administrator or owner of a site or document in SharePoint or OneDrive withdraws an invitation that was sent to a user outside your organization. An invitation can be withdrawn only before it's accepted.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "AccessInvitationUpdated",
+"friendlyName": "Access Invitation Updated",
+"description": "The user who created and sent an invitation to another person to view or edit a shared file or folder on a SharePoint or OneDrive site resent the invitation.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "AccessRequestApproved",
+"friendlyName": "Access Request Approved",
+"description": "The site administrator or owner of a site or document in SharePoint or OneDrive approves a user request to access the site or document.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "AccessRequestCreated",
+"friendlyName": "Access Request Created",
+"description": "User requests access to a site or document in SharePoint or OneDrive that they don't have permission to access.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "AccessRequestRejected",
+"friendlyName": "Access Request Rejected",
+"description": "The site administrator or owner of a site or document in SharePoint declines a user request to access the site or document.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ActivationEnabled",
+"friendlyName": "Activation Enabled",
+"description": "Users can browser-enable form templates that don't contain form code, require full trust, enable rendering on a mobile device, or use a data connection managed by a server administrator.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "AdministratorAddedToTermStore",
+"friendlyName": "Administrator Added To Term Store",
+"description": "Term store administrator added.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "AdministratorDeletedFromTermStore",
+"friendlyName": "Administrator Deleted From Term Store",
+"description": "Term store administrator deleted.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "AllowGroupCreationSet",
+"friendlyName": "Allow Group Creation Set",
+"description": "Site administrator or owner adds a permission level to a SharePoint or OneDrive site that allows a user assigned that permission to create a group for that site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "AppCatalogCreated",
+"friendlyName": "App Catalog Created",
+"description": "App catalog created to make custom business apps available for your SharePoint Environment.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "AuditPolicyRemoved",
+"friendlyName": "Audit Policy Removed",
+"description": "Document LifeCycle Policy has been removed for a site collection.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "AuditPolicyUpdate",
+"friendlyName": "Audit Policy Update",
+"description": "Document LifeCycle Policy has been updated for a site collection.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "AzureStreamingEnabledSet",
+"friendlyName": "Azure Streaming Enabled Set",
+"description": "A video portal owner has allowed video streaming from Azure.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "CollaborationTypeModified",
+"friendlyName": "Collaboration Type Modified",
+"description": "The type of collaboration allowed on sites (for example, intranet, extranet, or public) has been modified.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ConnectedSiteSettingModified",
+"friendlyName": "Connected Site Setting Modified",
+"description": "User has either created, modified or deleted the link between a project and a project site or the user modifies the synchronization setting on the link in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ContainerTypeCreated",
+"friendlyName": "Container Type Created",
+"description": "A SharePoint Embedded container type was created.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ContainerTypeDeleted",
+"friendlyName": "Container Type Deleted",
+"description": "A SharePoint Embedded container type was deleted.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ContainerTypeOwnersUpdated",
+"friendlyName": "Container Type Owners Updated",
+"description": "The owners of a SharePoint Embedded container type were updated.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ContainerTypeUpdated",
+"friendlyName": "Container Type Updated",
+"description": "A SharePoint Embedded container type was updated.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "CreateSSOApplication",
+"friendlyName": "Create SSOApplication",
+"description": "Target application created in Secure store service.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "CustomFieldOrLookupTableCreated",
+"friendlyName": "Custom Field Or Lookup Table Created",
+"description": "User created a custom field or lookup table/item in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "CustomFieldOrLookupTableDeleted",
+"friendlyName": "Custom Field Or Lookup Table Deleted",
+"description": "User deleted a custom field or lookup table/item in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "CustomFieldOrLookupTableModified",
+"friendlyName": "Custom Field Or Lookup Table Modified",
+"description": "User modified a custom field or lookup table/item in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "CustomizeExemptUsers",
+"friendlyName": "Customize Exempt Users",
+"description": "Global administrator customized the list of exempt user agents in SharePoint admin center. You can specify which user agents to exempt from receiving an entire web page to index. This configuration means when an exempt user agent encounters an InfoPath form, the form is returned as an XML file instead of an entire web page. This result makes indexing InfoPath forms faster.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "DelegateModified",
+"friendlyName": "Delegate Modified",
+"description": "User created or modified a security delegate in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "DelegateRemoved",
+"friendlyName": "Delegate Removed",
+"description": "User deleted a security delegate in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "DeleteSSOApplication",
+"friendlyName": "Delete SSOApplication",
+"description": "An SSO application was deleted.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "eDiscoveryHoldApplied",
+"friendlyName": "e Discovery Hold Applied",
+"description": "An In-Place Hold was placed on a content source. In-Place Holds are managed by using an eDiscovery site collection (such as the eDiscovery Center) in SharePoint.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "eDiscoveryHoldRemoved",
+"friendlyName": "e Discovery Hold Removed",
+"description": "An In-Place Hold was removed from a content source. In-Place Holds are managed by using an eDiscovery site collection (such as the eDiscovery Center) in SharePoint.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "eDiscoverySearchPerformed",
+"friendlyName": "e Discovery Search Performed",
+"description": "An eDiscovery search was performed using an eDiscovery site collection in SharePoint.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "EngagementAccepted",
+"friendlyName": "Engagement Accepted",
+"description": "User accepts a resource engagement in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "EngagementModified",
+"friendlyName": "Engagement Modified",
+"description": "User modifies a resource engagement in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "EngagementRejected",
+"friendlyName": "Engagement Rejected",
+"description": "User rejects a resource engagement in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "EnterpriseCalendarModified",
+"friendlyName": "Enterprise Calendar Modified",
+"description": "User copies, modifies or delete an enterprise calendar in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "EntityDeleted",
+"friendlyName": "Entity Deleted",
+"description": "User deletes a timesheet in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "EntityForceCheckedIn",
+"friendlyName": "Entity Force Checked In",
+"description": "User forces a check-in on a calendar, custom field or lookup table in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ExemptUserAgentSet",
+"friendlyName": "Exempt User Agent Set",
+"description": "Global administrator adds a user agent to the list of exempt user agents in the SharePoint admin center.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FeatureActivated",
+"friendlyName": "Feature Activated",
+"description": "Site admin activates a site collection feature.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FeatureDeactivated",
+"friendlyName": "Feature Deactivated",
+"description": "Site admin deactivates a site collection feature.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileAccessed",
+"friendlyName": "File Accessed",
+"description": "User or system account accesses a file on a SharePoint or OneDrive site. System accounts can also generate FileAccessed events.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileCheckOutDiscarded",
+"friendlyName": "File Check Out Discarded",
+"description": "User discards a checked out file. That means any changes they made to the file when it was checked out are discarded, and not saved to the version of the document in the document library.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileCheckedIn",
+"friendlyName": "File Checked In",
+"description": "User checks in a document that they checked out from a SharePoint or OneDrive document library.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileCheckedOut",
+"friendlyName": "File Checked Out",
+"description": "User checks out a document located in a SharePoint or OneDrive document library. Users can check out and make changes to documents that have been shared with them.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileCopied",
+"friendlyName": "File Copied",
+"description": "User copies a document from a SharePoint or OneDrive site. The copied file can be saved to another folder on the site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileDeleted",
+"friendlyName": "File Deleted",
+"description": "User deletes a document from a SharePoint or OneDrive site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileDeletedFirstStageRecycleBin",
+"friendlyName": "File Deleted First Stage Recycle Bin",
+"description": "User deletes a file from the recycle bin on a SharePoint or OneDrive site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileDeletedSecondStageRecycleBin",
+"friendlyName": "File Deleted Second Stage Recycle Bin",
+"description": "User deletes a file from the second-stage recycle bin on a SharePoint or OneDrive site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileDownloaded",
+"friendlyName": "File Downloaded",
+"description": "User downloads a document from a SharePoint or OneDrive site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileFetched",
+"friendlyName": "File Fetched",
+"description": "This event has been replaced by the FileAccessed event, and has been deprecated.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileModified",
+"friendlyName": "File Modified",
+"description": "User or system account modifies the content or the properties of a document located on a SharePoint or OneDrive site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileMoved",
+"friendlyName": "File Moved",
+"description": "User moves a document from its current location on a SharePoint or OneDrive site to a new location.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FilePreviewed",
+"friendlyName": "File Previewed",
+"description": "User previews a document on a SharePoint or OneDrive site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileRecycled",
+"friendlyName": "File Recycled",
+"description": "User moves a document into the SharePoint or OneDrive Recycle Bin.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileRenamed",
+"friendlyName": "File Renamed",
+"description": "User renames a document on a SharePoint or OneDrive site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileRestored",
+"friendlyName": "File Restored",
+"description": "User restores a document from the recycle bin of a SharePoint or OneDrive site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileSyncDownloadedFull",
+"friendlyName": "File Sync Downloaded Full",
+"description": "User downloads a file to their computer from a SharePoint document library or OneDrive using OneDrive sync app (OneDrive.exe).",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileSyncDownloadedPartial",
+"friendlyName": "File Sync Downloaded Partial",
+"description": "This event has been deprecated along with the old OneDrive sync app (Groove.exe).",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileSyncUploadedFull",
+"friendlyName": "File Sync Uploaded Full",
+"description": "User uploads a new file or changes to a file in SharePoint document library or OneDrive using OneDrive sync app (OneDrive.exe).",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileSyncUploadedPartial",
+"friendlyName": "File Sync Uploaded Partial",
+"description": "This event has been deprecated along with the old OneDrive sync app (Groove.exe).",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileUploaded",
+"friendlyName": "File Uploaded",
+"description": "User uploads a document to a folder on a SharePoint or OneDrive site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FileViewed",
+"friendlyName": "File Viewed",
+"description": "This event has been replaced by the FileAccessed event, and has been deprecated.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FolderCopied",
+"friendlyName": "Folder Copied",
+"description": "User copies a folder from a SharePoint or OneDrive site to another location in SharePoint or OneDrive.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FolderCreated",
+"friendlyName": "Folder Created",
+"description": "User creates a folder on a SharePoint or OneDrive site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FolderDeleted",
+"friendlyName": "Folder Deleted",
+"description": "User deletes a folder from a SharePoint or OneDrive site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FolderDeletedFirstStageRecycleBin",
+"friendlyName": "Folder Deleted First Stage Recycle Bin",
+"description": "User deletes a folder from the recycle bin on a SharePoint or OneDrive site .",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FolderDeletedSecondStageRecycleBin",
+"friendlyName": "Folder Deleted Second Stage Recycle Bin",
+"description": "User deletes a folder from the second-stage recycle bin on a SharePoint or OneDrive site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FolderModified",
+"friendlyName": "Folder Modified",
+"description": "User modifies a folder on a SharePoint or OneDrive site. This event includes folder metadata changes, such as tags and properties.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FolderMoved",
+"friendlyName": "Folder Moved",
+"description": "User moves a folder from a SharePoint or OneDrive site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FolderRecycled",
+"friendlyName": "Folder Recycled",
+"description": "User moves a folder into the SharePoint or OneDrive Recycle Bin.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FolderRenamed",
+"friendlyName": "Folder Renamed",
+"description": "User renames a folder on a SharePoint or OneDrive site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "FolderRestored",
+"friendlyName": "Folder Restored",
+"description": "User restores a folder from the Recycle Bin on a SharePoint or OneDrive site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "GroupAdded",
+"friendlyName": "Group Added",
+"description": "Site administrator or owner creates a group for a SharePoint or OneDrive site, or performs a task that results in a group being created. For example, the first time a user creates a link to share a file, a system group is added to the user's OneDrive site. This event can also be a result of a user creating a link with edit permissions to a shared file.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "GroupRemoved",
+"friendlyName": "Group Removed",
+"description": "User deletes a group from a SharePoint or OneDrive site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "GroupUpdated",
+"friendlyName": "Group Updated",
+"description": "Site administrator or owner changes the settings of a group for a SharePoint or OneDrive site. This can include changing the group's name, who can view or edit the group membership, and how membership requests are handled.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "LanguageAddedToTermStore",
+"friendlyName": "Language Added To Term Store",
+"description": "Language added to the terminology store.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "LanguageRemovedFromTermStore",
+"friendlyName": "Language Removed From Term Store",
+"description": "Language removed from the terminology store.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "LegacyWorkflowEnabledSet",
+"friendlyName": "Legacy Workflow Enabled Set",
+"description": "Site administrator or owner adds the SharePoint Workflow Task content type to the site. Global administrators can also enable work flows for the entire organization in the SharePoint admin center.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "LookAndFeelModified",
+"friendlyName": "Look And Feel Modified",
+"description": "User modifies a quick launch, Gantt chart formats, or group formats. Or the user creates, modifies, or deletes a view in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ManagedSyncClientAllowed",
+"friendlyName": "Managed Sync Client Allowed",
+"description": "User successfully establishes a sync relationship with a SharePoint or OneDrive site. The sync relationship is successful because the user's computer is a member of a domain that's been added to the list of domains (called the safe recipients list) that can access document libraries in your organization. For more information, see Get started with SharePoint Online Management Shell to enable OneDrive sync for domains that are on the safe recipients list.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "MaxQuotaModified",
+"friendlyName": "Max Quota Modified",
+"description": "The maximum quota for a site has been modified.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "MaxResourceUsageModified",
+"friendlyName": "Max Resource Usage Modified",
+"description": "The maximum allowable resource usage for a site has been modified.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "MySitePublicEnabledSet",
+"friendlyName": "My Site Public Enabled Set",
+"description": "The flag enabling users to have public MySites has been set by the SharePoint administrator.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "NewsFeedEnabledSet",
+"friendlyName": "News Feed Enabled Set",
+"description": "Site administrator or owner enables RSS feeds for a SharePoint or OneDrive site. Global administrators can enable RSS feeds for the entire organization in the SharePoint admin center.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ODBNextUXSettings",
+"friendlyName": "ODBNext UXSettings",
+"description": "New UI for OneDrive has been enabled.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "OfficeOnDemandSet",
+"friendlyName": "Office On Demand Set",
+"description": "Site administrator enables Office on Demand, which lets users access the latest version of Office desktop applications. Office on Demand is enabled in the SharePoint admin center and requires an Office 365 subscription that includes full, installed Office applications.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "PageViewed",
+"friendlyName": "Page Viewed",
+"description": "User views a page on a SharePoint site or OneDrive site. This does not include viewing document library files from a SharePoint site or One Drive for Business site on a browser.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "PeopleResultsScopeSet",
+"friendlyName": "People Results Scope Set",
+"description": "Site administrator creates or changes the result source for People Searches for a SharePoint site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "PermissionSyncSettingModified",
+"friendlyName": "Permission Sync Setting Modified",
+"description": "User modifies the project permission sync settings in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "PermissionTemplateModified",
+"friendlyName": "Permission Template Modified",
+"description": "User creates, modifies or deletes a permissions template in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "PortfolioDataAccessed",
+"friendlyName": "Portfolio Data Accessed",
+"description": "User accesses portfolio content (driver library, driver prioritization, portfolio analyses) in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "PortfolioDataModified",
+"friendlyName": "Portfolio Data Modified",
+"description": "User creates, modifies, or deletes portfolio data (driver library, driver prioritization, portfolio analyses) in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "PreviewModeEnabledSet",
+"friendlyName": "Preview Mode Enabled Set",
+"description": "Site administrator enables document preview for a SharePoint site.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ProjectAccessed",
+"friendlyName": "Project Accessed",
+"description": "User accesses project content in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ProjectCheckedIn",
+"friendlyName": "Project Checked In",
+"description": "User checks in a project that they checked out from a Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ProjectCheckedOut",
+"friendlyName": "Project Checked Out",
+"description": "User checks out a project located in a Project web app. Users can check out and make changes to projects that they have permission to open.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ProjectCreated",
+"friendlyName": "Project Created",
+"description": "User creates a project in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ProjectDeleted",
+"friendlyName": "Project Deleted",
+"description": "User deletes a project in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ProjectForceCheckedIn",
+"friendlyName": "Project Force Checked In",
+"description": "User forces a check in on a project in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ProjectModified",
+"friendlyName": "Project Modified",
+"description": "User modifies a project in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ProjectPublished",
+"friendlyName": "Project Published",
+"description": "User publishes a project in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ProjectWorkflowRestarted",
+"friendlyName": "Project Workflow Restarted",
+"description": "User restarts a workflow in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "PWASettingsAccessed",
+"friendlyName": "PWASettings Accessed",
+"description": "User access the Project web app settings via CSOM.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "PWASettingsModified",
+"friendlyName": "PWASettings Modified",
+"description": "User modifies the a Project web app configuration.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "QueueJobStateModified",
+"friendlyName": "Queue Job State Modified",
+"description": "User cancels or restarts a queue job in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "QuotaWarningEnabledModified",
+"friendlyName": "Quota Warning Enabled Modified",
+"description": "Storage quota warning modified.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "RenderingEnabled",
+"friendlyName": "Rendering Enabled",
+"description": "Browser-enabled form templates are rendered by InfoPath forms services.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ReportingAccessed",
+"friendlyName": "Reporting Accessed",
+"description": "User accessed the reporting endpoint in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ReportingSettingModified",
+"friendlyName": "Reporting Setting Modified",
+"description": "User modifies the reporting configuration in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ResourceAccessed",
+"friendlyName": "Resource Accessed",
+"description": "User accesses an enterprise resource content in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ResourceCheckedIn",
+"friendlyName": "Resource Checked In",
+"description": "User checks in an enterprise resource that they checked out from Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ResourceCheckedOut",
+"friendlyName": "Resource Checked Out",
+"description": "User checks out an enterprise resource located in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ResourceCreated",
+"friendlyName": "Resource Created",
+"description": "User creates an enterprise resource in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ResourceDeleted",
+"friendlyName": "Resource Deleted",
+"description": "User deletes an enterprise resource in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ResourceForceCheckedIn",
+"friendlyName": "Resource Force Checked In",
+"description": "User forces a check in of an enterprise resource in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ResourceModified",
+"friendlyName": "Resource Modified",
+"description": "User modifies an enterprise resource in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ResourcePlanCheckedInOrOut",
+"friendlyName": "Resource Plan Checked In Or Out",
+"description": "User checks in or out a resource plan in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ResourcePlanModified",
+"friendlyName": "Resource Plan Modified",
+"description": "User modifies a resource plan in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ResourcePlanPublished",
+"friendlyName": "Resource Plan Published",
+"description": "User publishes a resource plan in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ResourceRedacted",
+"friendlyName": "Resource Redacted",
+"description": "User redacts an enterprise resource removing all personal information in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "ResourceWarningEnabledModified",
+"friendlyName": "Resource Warning Enabled Modified",
+"description": "Resource quota warning modified.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "SSOGroupCredentialsSet",
+"friendlyName": "SSOGroup Credentials Set",
+"description": "Group credentials set in Secure store service.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "SSOUserCredentialsSet",
+"friendlyName": "SSOUser Credentials Set",
+"description": "User credentials set in Secure store service.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "SearchCenterUrlSet",
+"friendlyName": "Search Center Url Set",
+"description": "Search center URL set.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "SecondaryMySiteOwnerSet",
+"friendlyName": "Secondary My Site Owner Set",
+"description": "A user has added a secondary owner to their MySite.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "SecurityCategoryModified",
+"friendlyName": "Security Category Modified",
+"description": "User creates, modifies or deletes a security category in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "SecurityGroupModified",
+"friendlyName": "Security Group Modified",
+"description": "User creates, modifies or deletes a security group in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "SendToConnectionAdded",
+"friendlyName": "Send To Connection Added",
+"description": "Global administrator creates a new Send To connection on the Records management page in the SharePoint admin center. A Send To connection specifies settings for a document repository or a records center. When you create a Send To connection, a Content Organizer can submit documents to the specified location.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "SendToConnectionRemoved",
+"friendlyName": "Send To Connection Removed",
+"description": "Global administrator deletes a Send To connection on the Records management page in the SharePoint admin center.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "SharedLinkCreated",
+"friendlyName": "Shared Link Created",
+"description": "User creates a link to a shared file in SharePoint or OneDrive. This link can be sent to other people to give them access to the file. A user can create two types of links: a link that allows a user to view and edit the shared file, or a link that allows the user to just view the file.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "SharedLinkDisabled",
+"friendlyName": "Shared Link Disabled",
+"description": "User disables (permanently) a link that was created to share a file.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "SharingRevoked",
+"friendlyName": "Sharing Revoked",
+"description": "User unshared a file or folder that was previously shared with other users. This event is logged when a user stops sharing a file with other users.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "SharingSet",
+"friendlyName": "Sharing Set",
+"description": "User shares a file or folder located in SharePoint or OneDrive with another user inside their organization.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "SiteAdminChangeRequest",
+"friendlyName": "Site Admin Change Request",
+"description": "User requests to be added as a site collection administrator for a SharePoint site collection. Site collection administrators have full control permissions for the site collection and all subsites.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "SiteCollectionCreated",
+"friendlyName": "Site Collection Created",
+"description": "Global administrator creates a new site collection in your SharePoint organization.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "SitePermanentlyDeleted",
+"friendlyName": "Site Permanently Deleted",
+"description": "A SharePoint or global administrator permanently deletes a site from SharePoint Admin Center Deleted Sites.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "SiteRenamed",
+"friendlyName": "Site Renamed",
+"description": "Site administrator or owner renames a SharePoint or OneDrive site",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "SiteRestored",
+"friendlyName": "Site Restored",
+"description": "A SharePoint or global administrator restores a site from SharePoint Admin Center Deleted Sites.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "StatusReportModified",
+"friendlyName": "Status Report Modified",
+"description": "User creates, modifies or deletes a status report in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "SyncGetChanges",
+"friendlyName": "Sync Get Changes",
+"description": "User clicks **Sync** in the action tray on in SharePoint or OneDrive to synchronize any changes to file in a document library to their computer.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "SyntexBillingSubscriptionSettingsChanged",
+"friendlyName": "Syntex Billing Subscription Settings Changed",
+"description": "The Syntex Billing subscription settings have changed. This event is triggered when a Syntex trial expires.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "TaskStatusAccessed",
+"friendlyName": "Task Status Accessed",
+"description": "User accesses the status of one or more tasks in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "TaskStatusApproved",
+"friendlyName": "Task Status Approved",
+"description": "User approves a status update of one or more tasks in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "TaskStatusRejected",
+"friendlyName": "Task Status Rejected",
+"description": "User rejects a status update of one or more tasks in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "TaskStatusSaved",
+"friendlyName": "Task Status Saved",
+"description": "User saves a status update of one or more tasks in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "TaskStatusSubmitted",
+"friendlyName": "Task Status Submitted",
+"description": "User submits a status update of one or more tasks in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "TenantWideThemeCreated",
+"friendlyName": "Tenant Wide Theme Created",
+"description": "A SharePoint administrator, global administrator, or brand manager creates a custom theme that applies across all SharePoint sites in your organization.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "TenantWideThemeDeleted",
+"friendlyName": "Tenant Wide Theme Deleted",
+"description": "A SharePoint administrator, global administrator, or brand manager deletes a custom theme that applies across all SharePoint sites in your organization.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "TenantWideThemeUpdated",
+"friendlyName": "Tenant Wide Theme Updated",
+"description": "A SharePoint administrator, global administrator, or brand manager updates a custom theme that applies across all SharePoint sites in your organization.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "TimesheetAccessed",
+"friendlyName": "Timesheet Accessed",
+"description": "User accesses a timesheet in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "TimesheetApproved",
+"friendlyName": "Timesheet Approved",
+"description": "User approves timesheet in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "TimesheetRejected",
+"friendlyName": "Timesheet Rejected",
+"description": "User rejects a timesheet in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "TimesheetSaved",
+"friendlyName": "Timesheet Saved",
+"description": "User saves a timesheet in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "TimesheetSubmitted",
+"friendlyName": "Timesheet Submitted",
+"description": "User submits a status timesheet in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "UnmanagedSyncClientBlocked",
+"friendlyName": "Unmanaged Sync Client Blocked",
+"description": "User tries to establish a sync relationship with a SharePoint or OneDrive site from a computer that isn't a member of your organization's domain or is a member of a domain that hasn't been added to the list of domains (called the safe recipients list) that can access document libraries in your organization. The sync relationship is not allowed, and the user's computer is blocked from syncing, downloading, or uploading files on a document library.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "UpdateDisableSiteBranding",
+"friendlyName": "Update Disable Site Branding",
+"description": "A SharePoint or global administrator enables or disables site branding.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "UpdateSSOApplication",
+"friendlyName": "Update SSOApplication",
+"description": "Target application updated in Secure store service.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "UserAddedToGroup",
+"friendlyName": "User Added To Group",
+"description": "Site administrator or owner adds a person to a group on a SharePoint or OneDrive site. Adding a person to a group grants the user the permissions that were assigned to the group.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "UserRemovedFromGroup",
+"friendlyName": "User Removed From Group",
+"description": "Site administrator or owner removes a person from a group on a SharePoint or OneDrive site. After the person is removed, they no longer are granted the permissions that were assigned to the group.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "WebThemeApplied",
+"friendlyName": "Web Theme Applied",
+"description": "A SharePoint or global administrator, or a site owner applies a web theme.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+},
+{
+"operation": "WorkflowModified",
+"friendlyName": "Workflow Modified",
+"description": "User creates, modifies, or deletes an Enterprise Project Type or Workflow phases or stages in Project web app.",
+"group": "sharepoint",
+"source": "management-activity-api-schema"
+}
+]
+}

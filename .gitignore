@@ -1,0 +1,15 @@
+node_modules
+dist
+.env
+/data/
+*.log
+.DS_Store
+pgdata/
+
+docs/screenshots/
+
+# generated at build time from @ip-location-db/geo-whois-asn-country (pnpm --filter @audit/ipdata geo:rebuild)
+packages/ipdata/data/geo.json
+# generated with: pnpm --filter @audit/api sample:generate ./sample-data
+sample-data/
+apps/web/public/fonts/
