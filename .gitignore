@@ -13,3 +13,4 @@ packages/ipdata/data/geo.json
 # generated with: pnpm --filter @audit/api sample:generate ./sample-data
 sample-data/
 apps/web/public/fonts/
+sample-data-large/

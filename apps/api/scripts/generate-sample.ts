@@ -6,7 +6,7 @@
  *   message-trace.csv        Exchange enhanced summary report
  *   defender-union.csv       Advanced hunting union of EmailEvents / UrlClickEvents / EmailUrlInfo / EmailPostDeliveryEvents
  *
- * Usage: tsx scripts/generate-sample.ts [outDir] [seed]
+ * Usage: tsx scripts/generate-sample.ts [outDir] [seed] [days=10] [extraUsers=0]
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -18,11 +18,14 @@ const pick = <T>(a: T[]) => a[Math.floor(rnd() * a.length)];
 const guid = () => 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => { const r = Math.floor(rnd() * 16); return (c === 'x' ? r : (r & 3) | 8).toString(16); });
 
 const DOMAIN = 'fabrikam-demo.dk';
-const USERS = ['anna.holm', 'bo.nielsen', 'carla.sørensen', 'dan.jensen', 'eva.larsen', 'finn.poulsen', 'gitte.madsen', 'hans.kristensen', 'ida.thomsen', 'jonas.berg', 'karen.lund', 'lars.friis', 'mette.dahl', 'niels.ravn'].map((u) => `${u}@${DOMAIN}`);
+const EXTRA_USERS = Number(process.argv[5] ?? 0);
+const FIRST = ['mads', 'sofie', 'emil', 'freja', 'oscar', 'clara', 'noah', 'alma', 'william', 'ella', 'lucas', 'agnes', 'oliver', 'laura', 'malthe', 'olivia', 'victor', 'ida', 'elias', 'josefine'];
+const LAST = ['andersen', 'pedersen', 'christensen', 'rasmussen', 'jørgensen', 'petersen', 'møller', 'mortensen', 'knudsen', 'olsen'];
+const USERS = ['anna.holm', 'bo.nielsen', 'carla.sørensen', 'dan.jensen', 'eva.larsen', 'finn.poulsen', 'gitte.madsen', 'hans.kristensen', 'ida.thomsen', 'jonas.berg', 'karen.lund', 'lars.friis', 'mette.dahl', 'niels.ravn'].concat(Array.from({ length: EXTRA_USERS }, (_, i) => `${FIRST[i % FIRST.length]}.${LAST[Math.floor(i / FIRST.length) % LAST.length]}${i >= FIRST.length * LAST.length ? i : ''}`)).map((u) => `${u}@${DOMAIN}`);
 const ADMIN = `it-admin@${DOMAIN}`;
 const VICTIM = USERS[0];
 const INSIDER = USERS[5];
-const HOME_IPS: Record<string, string> = Object.fromEntries(USERS.map((u, i) => [u, `87.52.${100 + i}.${10 + i}`]));
+const HOME_IPS: Record<string, string> = Object.fromEntries(USERS.map((u, i) => [u, `87.52.${100 + (i % 150)}.${10 + (i % 200)}`]));
 const OFFICE_IP = '185.17.146.22';
 const ATTACKER_IP = '45.142.212.61';   // NG
 const ATTACKER_IP2 = '103.75.190.14';  // ID
@@ -32,7 +35,7 @@ const KEEPIT_IP = '185.221.245.37';
 const SITE = `https://fabrikamdemo.sharepoint.com/sites/Finance`;
 
 const start = Date.UTC(2026, 9, 5, 0, 0, 0); // 5 Oct 2026
-const DAYS = 10;
+const DAYS = Math.max(8, Number(process.argv[4] ?? 10));
 const t = (day: number, hour: number, minute = Math.floor(rnd() * 60), second = Math.floor(rnd() * 60)) => new Date(start + day * 86400000 + hour * 3600000 + minute * 60000 + second * 1000);
 const iso7 = (d: Date) => d.toISOString().replace('Z', '0000Z');
 const isoPlain = (d: Date) => d.toISOString().replace(/\.\d{3}Z$/, '');
