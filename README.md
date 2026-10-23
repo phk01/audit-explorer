@@ -59,7 +59,7 @@ Tests: `pnpm --filter @audit/core test`.
 
 1. Push this repository (private) to GitHub and create a **Docker Compose** resource in Coolify pointing at it.
 2. Set the environment variables from `.env.example`: `POSTGRES_PASSWORD`, `SESSION_SECRET` (`openssl rand -hex 32`), `ADMIN_EMAIL`, `ADMIN_PASSWORD`.
-3. Give the `app` service a domain with HTTPS (the session cookie is `Secure` in production) and expose port 8080.
+3. Under Domains, give the `app` service a domain (HTTPS, port 8080) and create the DNS record Coolify shows. No host port is published; the proxy reaches the container directly.
 4. Deploy. The first start creates the schema and the admin account; sign in and add analysts under *Users*.
 
 Volumes: `evidence` (`/data`, the uploaded original files) and `pgdata`. Back both up. Size the host for the tenants you investigate: ~1 KB of raw JSON per audit record plus indexes — a 1,000,000-row Purview export is roughly 2 GB in PostgreSQL.

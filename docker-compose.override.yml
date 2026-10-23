@@ -1,0 +1,7 @@
+# Local development / plain docker compose only.
+# docker compose loads this file automatically when run without -f; Coolify passes -f docker-compose.yml and ignores it,
+# so the app is reached through the Coolify proxy instead of a published host port.
+services:
+  app:
+    ports:
+      - "${APP_PORT:-8080}:8080"
