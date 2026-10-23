@@ -1,5 +1,6 @@
 import type {
   User, Workspace, Overview, EventQuery, EventPage, EventFacets, Histogram, EventDetail, Import, Person, PersonDetail, Coverage, FacetBucket,
+  Finding, SignalRun, ResolveResult, UserInvestigation, TimelineLine, EmailCandidate, EmailInvestigation, UrlInvestigation, IpInvestigation,
 } from '@audit/core';
 import type { SourceDefinition } from '@core/sources';
 import type { WorkloadGroup } from '@core/workloads';
@@ -78,6 +79,11 @@ export interface PeopleQuery { search?: string; sort?: 'events' | 'lastSeen' | '
 export interface UploadResult { created: Import[]; skipped: { fileName: string; reason: string }[] }
 export type CatalogGroups = Record<WorkloadGroup, { label: string; description: string }>;
 export interface Activity { operation: string; friendlyName: string; description: string }
+export interface FindingsQuery { status?: string; severity?: string; user?: string; signal?: string }
+export interface FindingsResult { items: Finding[]; lastRun: SignalRun | null; counts: { high: number; medium: number; low: number; dismissed: number } }
+export interface FindingPatch { status?: Finding['status']; note?: string | null }
+export interface TimelineQuery { user?: string; ip?: string; session?: string; q?: string; from?: string; to?: string; routine?: '0' | '1' }
+export interface TimelineResult { lines: TimelineLine[]; truncated: boolean }
 
 export const endpoints = {
   me: () => api.get<User>('/auth/me'),
@@ -112,6 +118,17 @@ export const endpoints = {
 
   people: (id: string, q: PeopleQuery) => api.get<{ items: Person[]; total: number }>(`/workspaces/${id}/people`, q as QueryParams),
   person: (id: string, upn: string) => api.get<PersonDetail>(`/workspaces/${id}/people/${encodeURIComponent(upn)}`),
+
+  findings: (id: string, q: FindingsQuery = {}) => api.get<FindingsResult>(`/workspaces/${id}/findings`, q as QueryParams),
+  recomputeFindings: (id: string) => api.post<{ ok: boolean; findings: number; ms: number }>(`/workspaces/${id}/findings/recompute`),
+  updateFinding: (findingId: string, b: FindingPatch) => api.patch<Finding>(`/findings/${findingId}`, b),
+  resolve: (id: string, q: string, signal?: AbortSignal) => api.get<ResolveResult>(`/workspaces/${id}/investigate/resolve`, { q }, { signal }),
+  investigateUser: (id: string, upn: string) => api.get<UserInvestigation>(`/workspaces/${id}/investigate/user/${encodeURIComponent(upn)}`),
+  investigateTimeline: (id: string, q: TimelineQuery, signal?: AbortSignal) => api.get<TimelineResult>(`/workspaces/${id}/investigate/timeline`, q as QueryParams, { signal }),
+  emailSearch: (id: string, q: string, signal?: AbortSignal) => api.get<{ items: EmailCandidate[] }>(`/workspaces/${id}/investigate/email`, { q }, { signal }),
+  investigateEmail: (id: string, key: string) => api.get<EmailInvestigation>(`/workspaces/${id}/investigate/email/${encodeURIComponent(key)}`),
+  investigateUrl: (id: string, q: string, signal?: AbortSignal) => api.get<UrlInvestigation>(`/workspaces/${id}/investigate/url`, { q }, { signal }),
+  investigateIp: (id: string, ip: string) => api.get<IpInvestigation>(`/workspaces/${id}/investigate/ip/${encodeURIComponent(ip)}`),
 
   coverage: (id: string) => api.get<Coverage>(`/workspaces/${id}/coverage`),
   catalogSources: () => api.get<SourceDefinition[]>('/catalog/sources'),

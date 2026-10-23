@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { NavLink, Outlet, useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import type { Workspace } from '@audit/core';
 import { useWorkspace, useWorkspaces } from '../lib/queries';
 import { useLocalPref } from '../lib/url';
@@ -14,9 +14,9 @@ export function useWorkspaceCtx(): ShellCtx { return useOutletContext<ShellCtx>(
 
 const ico = (d: string) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d={d} /></svg>;
 const NAV: { to: string; label: string; icon: ReactNode; end?: boolean }[] = [
-  { to: '', label: 'Overview', end: true, icon: ico('M4 13h6V4H4v9Zm10 7h6v-9h-6v9ZM4 20h6v-4H4v4Zm10-9h6V4h-6v7Z') },
-  { to: 'activity', label: 'Global Activity', icon: ico('M3 12h4l3-8 4 16 3-8h4') },
+  { to: '', label: 'Investigate', end: true, icon: ico('M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm9 16-3.5-3.5M11 8v3l2 2') },
   { to: 'people', label: 'People', icon: ico('M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm13 9v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8') },
+  { to: 'activity', label: 'Global Activity', icon: ico('M3 12h4l3-8 4 16 3-8h4') },
   { to: 'emails', label: 'Emails', icon: ico('M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Zm0 0 9 6 9-6') },
   { to: 'files', label: 'SharePoint & OneDrive', icon: ico('M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z') },
   { to: 'teams', label: 'Teams', icon: ico('M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z') },
@@ -25,6 +25,7 @@ const NAV: { to: string; label: string; icon: ReactNode; end?: boolean }[] = [
   { to: 'security', label: 'Security & Compliance', icon: ico('M12 2 3 7v6c0 5.5 3.8 9.7 9 11 5.2-1.3 9-5.5 9-11V7l-9-5Zm0 6v5m0 3h.01') },
   { to: 'applications', label: 'Applications & Automation', icon: ico('M4 4h7v7H4V4Zm9 0h7v7h-7V4ZM4 13h7v7H4v-7Zm9 0h7v7h-7v-7Z') },
   { to: 'cases', label: 'Cases & Investigations', icon: ico('M9 3h6l1 3h4v15H4V6h4l1-3Zm0 9 2 2 4-4') },
+  { to: 'overview', label: 'Overview', icon: ico('M4 13h6V4H4v9Zm10 7h6v-9h-6v9ZM4 20h6v-4H4v4Zm10-9h6V4h-6v7Z') },
   { to: 'coverage', label: 'Data Coverage & Health', icon: ico('M3 12h4l2-5 4 10 3-7 2 2h3M4 20h16') },
 ];
 const NAV_BOTTOM = [
@@ -41,6 +42,7 @@ export function WorkspaceShell() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const [q, setQ] = useState('');
+  const investigating = /\/investigate(\/|$)/.test(useLocation().pathname);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -76,7 +78,7 @@ export function WorkspaceShell() {
             <IconChevronDown size={14} />
           </div>
           <nav className="nav">
-            {NAV.map((n) => <NavLink key={n.to} to={n.to} end={n.end} title={n.label} onClick={() => setMobileOpen(false)}><span className="nav-ico">{n.icon}</span><span className="nav-txt">{n.label}</span></NavLink>)}
+            {NAV.map((n) => <NavLink key={n.to} to={n.to} end={n.end} title={n.label} onClick={() => setMobileOpen(false)} className={n.to === '' && investigating ? 'active' : undefined}><span className="nav-ico">{n.icon}</span><span className="nav-txt">{n.label}</span></NavLink>)}
           </nav>
           <div className="nav-bottom">
             {NAV_BOTTOM.map((n) => <NavLink key={n.to} to={n.to} title={n.label} onClick={() => setMobileOpen(false)}><span className="nav-ico">{n.icon}</span><span className="nav-txt">{n.label}</span></NavLink>)}

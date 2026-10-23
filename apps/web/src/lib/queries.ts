@@ -1,6 +1,6 @@
 import { keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { EventQuery, Workspace } from '@audit/core';
-import { endpoints, type PeopleQuery } from './api';
+import type { EventQuery, Finding, UserInvestigation, Workspace } from '@audit/core';
+import { endpoints, type FindingPatch, type FindingsQuery, type FindingsResult, type PeopleQuery, type TimelineQuery } from './api';
 
 export const keys = {
   me: ['me'] as const,
@@ -16,6 +16,14 @@ export const keys = {
   people: (id: string, q: PeopleQuery) => ['people', id, q] as const,
   person: (id: string, upn: string) => ['person', id, upn] as const,
   coverage: (id: string) => ['coverage', id] as const,
+  findings: (id: string, q: FindingsQuery) => ['findings', id, q] as const,
+  resolve: (id: string, q: string) => ['resolve', id, q] as const,
+  investigateUser: (id: string, upn: string) => ['investigateUser', id, upn] as const,
+  timeline: (id: string, q: TimelineQuery) => ['timeline', id, q] as const,
+  emailSearch: (id: string, q: string) => ['emailSearch', id, q] as const,
+  email: (id: string, key: string) => ['email', id, key] as const,
+  url: (id: string, q: string) => ['url', id, q] as const,
+  ip: (id: string, ip: string) => ['ip', id, ip] as const,
   catalogSources: ['catalog', 'sources'] as const,
   catalogGroups: ['catalog', 'groups'] as const,
 };
@@ -51,6 +59,42 @@ export const useCatalogSources = () => useQuery({ queryKey: keys.catalogSources,
 export const useActivityCatalog = () => useQuery({ queryKey: ['catalog', 'activities'], queryFn: () => endpoints.catalogActivities(''), staleTime: Infinity, select: (list) => new Map(list.map((a) => [a.operation.toLowerCase(), a.friendlyName])) });
 export const useCatalogGroups = () => useQuery({ queryKey: keys.catalogGroups, queryFn: endpoints.catalogGroups, staleTime: Infinity });
 
+// ---- investigations ----
+export const useFindings = (id: string, q: FindingsQuery = {}) => useQuery({ queryKey: keys.findings(id, q), queryFn: () => endpoints.findings(id, q), placeholderData: keepPreviousData });
+export const useResolve = (id: string, q: string) => useQuery({ queryKey: keys.resolve(id, q), queryFn: ({ signal }) => endpoints.resolve(id, q, signal), enabled: q.trim().length >= 2, placeholderData: keepPreviousData, staleTime: 30_000 });
+export const useUserInvestigation = (id: string, upn: string) => useQuery({ queryKey: keys.investigateUser(id, upn), queryFn: () => endpoints.investigateUser(id, upn), enabled: !!upn });
+export const useTimeline = (id: string, q: TimelineQuery, enabled = true) => useQuery({ queryKey: keys.timeline(id, q), queryFn: ({ signal }) => endpoints.investigateTimeline(id, q, signal), placeholderData: keepPreviousData, enabled, staleTime: 30_000 });
+export const useEmailSearch = (id: string, q: string) => useQuery({ queryKey: keys.emailSearch(id, q), queryFn: ({ signal }) => endpoints.emailSearch(id, q, signal), enabled: q.trim().length > 0, placeholderData: keepPreviousData });
+export const useEmailInvestigation = (id: string, key: string) => useQuery({ queryKey: keys.email(id, key), queryFn: () => endpoints.investigateEmail(id, key), enabled: !!key });
+export const useUrlInvestigation = (id: string, q: string) => useQuery({ queryKey: keys.url(id, q), queryFn: ({ signal }) => endpoints.investigateUrl(id, q, signal), enabled: q.trim().length > 0, placeholderData: keepPreviousData });
+export const useIpInvestigation = (id: string, ip: string) => useQuery({ queryKey: keys.ip(id, ip), queryFn: () => endpoints.investigateIp(id, ip), enabled: !!ip });
+
+export function useRecomputeFindings(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => endpoints.recomputeFindings(id),
+    onSuccess: () => { for (const k of ['findings', 'investigateUser', 'resolve', 'ip', 'url', 'email']) qc.invalidateQueries({ queryKey: [k, id] }); },
+  });
+}
+
+/** Patch a finding's status / note; every cached copy (findings lists, user investigations, IP pages) is updated optimistically. */
+export function useUpdateFinding(wsId: string) {
+  const qc = useQueryClient();
+  const patchEverywhere = (findingId: string, patch: Partial<Finding>) => {
+    const apply = (f: Finding) => (f.id === findingId ? { ...f, ...patch } : f);
+    qc.setQueriesData<FindingsResult>({ queryKey: ['findings', wsId] }, (old) => (old ? { ...old, items: old.items.map(apply) } : old));
+    qc.setQueriesData<UserInvestigation>({ queryKey: ['investigateUser', wsId] }, (old) => (old ? { ...old, findings: old.findings.map(apply) } : old));
+    qc.setQueriesData<{ findings: Finding[] }>({ queryKey: ['ip', wsId] }, (old) => (old ? { ...old, findings: old.findings.map(apply) } : old));
+  };
+  return useMutation({
+    mutationFn: ({ id, patch }: { id: string; patch: FindingPatch }) => endpoints.updateFinding(id, patch),
+    onMutate: async ({ id, patch }) => { patchEverywhere(id, patch as Partial<Finding>); },
+    onSuccess: (f) => { patchEverywhere(f.id, f); },
+    onError: () => { qc.invalidateQueries({ queryKey: ['findings', wsId] }); qc.invalidateQueries({ queryKey: ['investigateUser', wsId] }); qc.invalidateQueries({ queryKey: ['ip', wsId] }); },
+    onSettled: () => { qc.invalidateQueries({ queryKey: ['findings', wsId], refetchType: 'none' }); },
+  });
+}
+
 export function useUpdateWorkspace(id: string) {
   const qc = useQueryClient();
   return useMutation({
@@ -71,7 +115,7 @@ export function useUpdateWorkspace(id: string) {
 export function useInvalidateWorkspaceData(id: string) {
   const qc = useQueryClient();
   return () => {
-    for (const k of ['events', 'facets', 'histogram', 'people', 'person']) qc.invalidateQueries({ queryKey: [k, id] });
+    for (const k of ['events', 'facets', 'histogram', 'people', 'person', 'findings', 'investigateUser', 'timeline', 'resolve', 'emailSearch', 'email', 'url', 'ip']) qc.invalidateQueries({ queryKey: [k, id] });
     qc.invalidateQueries({ queryKey: keys.overview(id) });
     qc.invalidateQueries({ queryKey: keys.coverage(id) });
     qc.invalidateQueries({ queryKey: keys.imports(id) });

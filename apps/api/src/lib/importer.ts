@@ -25,6 +25,7 @@ import {
 } from '@audit/core';
 import { enrichIp } from '@audit/ipdata';
 import { pool, query, one } from './db.js';
+import { runSignals } from './signals.js';
 
 export const importEvents = new EventEmitter();
 importEvents.setMaxListeners(200);
@@ -286,6 +287,8 @@ export async function runImport(id: string): Promise<void> {
     await query(`update imports set status = 'completed', finished_at = now(), rows_total = $2, warnings = $3 where id = $1`, [id, rowIndex, JSON.stringify(warnings.slice(0, 60))]);
     row.status = 'completed';
     emit(row, 'completed');
+    // Detections run after the import is visible; failures never fail the import.
+    runSignals(row.workspace_id).catch((e) => console.error('signals failed', e));
   } catch (e) {
     const msg = (e as Error).message;
     if (msg === '__cancelled') {

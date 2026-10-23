@@ -263,3 +263,162 @@ export interface ImportProgressEvent {
 export interface SavedSearch { id: string; workspaceId: string | null; name: string; query: EventQuery; createdBy: string; createdAt: string }
 
 export interface ApiError { error: string; message: string; details?: unknown }
+
+// ---------------------------------------------------------------- detections & investigations
+
+export type Severity = 'high' | 'medium' | 'low';
+
+export interface Finding {
+  id: string;
+  workspaceId: string;
+  signal: string;
+  fingerprint: string;
+  severity: Severity;
+  category: string;
+  title: string;
+  text: string;
+  facts: [string, string][];
+  entityType: 'user' | 'ip' | 'session' | 'message' | 'app' | null;
+  entityValue: string | null;
+  users: string[];
+  eventCount: number;
+  eventIds: number[];
+  evidenceQuery: EventQuery | null;
+  firstTs: string | null;
+  lastTs: string | null;
+  status: 'open' | 'dismissed' | 'confirmed';
+  note: string | null;
+  computedAt: string;
+}
+
+export interface SignalRun { workspaceId: string; startedAt: string | null; finishedAt: string | null; durationMs: number | null; findings: number | null; error: string | null }
+
+export type VerdictLevel = 'compromised' | 'suspicious' | 'clean' | 'insufficient';
+
+export interface VerdictIndicator {
+  severity: Severity;
+  title: string;
+  text: string;
+  findingId: string | null;
+  evidenceQuery: EventQuery | null;
+  ts: string | null;
+  /** True when the finding describes an attacker hitting many accounts (spray, scripted client, shared country) and this account is only one of the targets. */
+  targetedOnly?: boolean;
+}
+
+export interface Verdict {
+  level: VerdictLevel;
+  headline: string;      // "Likely compromised — 4 strong indicators"
+  summary: string;       // two or three sentences in plain language
+  score: number;
+  indicators: VerdictIndicator[];
+  /** What we could NOT see (no sign-in logs, no message trace…) so the analyst knows the blind spots. */
+  blindSpots: string[];
+  /** Findings about this account itself vs. wider findings that merely list it as a target. */
+  ownFindings: number;
+  targetedFindings: number;
+}
+
+export interface StoryMoment {
+  ts: string;
+  severity: Severity | 'info';
+  kind: 'signin' | 'finding' | 'targeted' | 'sensitive' | 'click' | 'country' | 'client' | 'first' | 'last';
+  sentence: string;
+  detail: string | null;
+  eventId: number | null;
+  findingId: string | null;
+  evidenceQuery: EventQuery | null;
+}
+
+export interface UserInvestigation {
+  upn: string;
+  person: PersonDetail | null;
+  verdict: Verdict;
+  story: StoryMoment[];
+  findings: Finding[];
+  phishing: { clicks: number; flaggedClicks: number; phishMailReceived: number; zapped: number } | null;
+  dataWindow: { from: string | null; to: string | null; sources: SourceId[] };
+}
+
+export interface TimelineLine {
+  from: string;
+  to: string;
+  count: number;
+  sentence: string;
+  kind: EventKind;
+  operation: string;
+  severity: Severity | null;
+  user: string | null;
+  ip: string | null;
+  ipCountry: string | null;
+  ipOwner: string | null;
+  client: string | null;
+  items: string[];
+  eventIds: number[];
+  routine: boolean;
+}
+
+export interface EmailCandidate { key: string; subject: string | null; sender: string | null; firstSeen: string | null; recipients: number; sources: SourceId[]; verdict: string | null }
+
+export interface EmailRecipient {
+  upn: string;
+  delivery: string | null;
+  deliveryLocation: string | null;
+  opened: { first: string; count: number; clients: string[] } | null;
+  clicks: { ts: string; result: string | null; url: string | null; ip: string | null; country: string | null }[];
+  postDelivery: string | null;
+  repliedOrForwarded: { ts: string; subject: string }[];
+  /** Suspicious things this recipient did within 90 minutes after their first click. */
+  afterClick: VerdictIndicator[];
+  risk: Severity | 'none';
+  /** The recipient's own account verdict (from the findings), so a compromised clicker stands out. */
+  verdictLevel?: VerdictLevel | null;
+}
+
+export interface EmailInvestigation {
+  key: string;
+  subject: string | null;
+  sender: string | null;
+  senderIp: string | null;
+  firstSeen: string | null;
+  messageId: string | null;
+  networkMessageId: string | null;
+  verdict: string | null;
+  sources: SourceId[];
+  urls: string[];
+  recipients: EmailRecipient[];
+  summary: { recipients: number; delivered: number; undelivered: number; zapped: number; opened: number; clicked: number; clickedThrough: number; replied: number; atRisk: number };
+  nonRecipientClicks: { upn: string; ts: string; result: string | null }[];
+  headline: string;
+}
+
+export interface UrlInvestigation {
+  query: string;
+  emails: EmailCandidate[];
+  clicks: { ts: string; upn: string; url: string; result: string | null; ip: string | null; country: string | null; networkMessageId: string | null }[];
+  users: { upn: string; clicks: number; clickedThrough: boolean; verdictLevel: VerdictLevel | null }[];
+}
+
+export interface IpInvestigation {
+  ip: string;
+  country: string | null;
+  countryName: string | null;
+  owner: string | null;
+  ownerName: string | null;
+  events: number;
+  failed: number;
+  firstSeen: string | null;
+  lastSeen: string | null;
+  users: { upn: string; events: number; failed: number; succeededSignIns: number; firstSeen: string; lastSeen: string }[];
+  operations: FacetBucket[];
+  clients: FacetBucket[];
+  findings: Finding[];
+  headline: string;
+}
+
+export interface ResolveResult {
+  users: { upn: string; events: number; verdictLevel: VerdictLevel | null; findings: number }[];
+  ips: { ip: string; events: number; country: string | null; owner: string | null }[];
+  emails: EmailCandidate[];
+  urls: { url: string; clicks: number }[];
+}

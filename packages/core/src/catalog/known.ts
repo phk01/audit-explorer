@@ -82,4 +82,9 @@ export function sensitiveFamily(operationKey: string): string | null {
 
 export const DOWNLOAD_OPERATIONS = new Set(['filedownloaded', 'filesyncdownloadedfull', 'filesyncdownloadedpartial', 'filecopied']);
 export const DELETE_OPERATIONS = new Set(['filedeleted', 'filerecycled', 'filedeletedfirststagerecyclebin', 'filedeletedsecondstagerecyclebin', 'folderdeleted', 'folderrecycled', 'harddelete', 'softdelete', 'movetodeleteditems']);
-export const ROUTINE_OPERATIONS = new Set(['fileaccessed', 'filepreviewed', 'messagesent', 'teamssessionstarted', 'messageread', 'messagesread', 'chatretrieved', 'messageupdated', 'meetingparticipantdetail', 'fileaccessedextended', 'pageviewed', 'searchqueryperformed', 'messageshown']);
+/** Everyday activity that is hidden from investigation timelines by default (shown with "routine" on, and always shown when a finding touches the event). */
+export const ROUTINE_OPERATIONS = new Set(['fileaccessed', 'filepreviewed', 'fileaccessedextended', 'filemodified', 'filemodifiedextended', 'filecheckedin', 'filecheckedout', 'filesyncdownloadedfull', 'filesyncuploadedfull', 'folderaccessed', 'pageviewed', 'pageviewedextended', 'searchqueryperformed', 'listviewed', 'listitemviewed',
+  'mailitemsaccessed', 'send', 'create', 'update', 'move', 'folderbind', 'mailboxlogin', 'movetodeleteditems', 'softdelete',
+  'userloggedin', 'userloginfailed',
+  'messagesent', 'teamssessionstarted', 'messageread', 'messagesread', 'chatretrieved', 'messageupdated', 'meetingparticipantdetail', 'messageshown', 'chatcreated', 'meetingdetail', 'reactedtomessage', 'messagecreatedhaslink', 'messageslistedinchat',
+  'viewdashboard', 'viewreport', 'copilotinteraction']);

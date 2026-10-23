@@ -26,9 +26,9 @@ const ADMIN = `it-admin@${DOMAIN}`;
 const VICTIM = USERS[0];
 const INSIDER = USERS[5];
 const HOME_IPS: Record<string, string> = Object.fromEntries(USERS.map((u, i) => [u, `87.52.${100 + (i % 150)}.${10 + (i % 200)}`]));
-const OFFICE_IP = '185.17.146.22';
-const ATTACKER_IP = '45.142.212.61';   // NG
-const ATTACKER_IP2 = '103.75.190.14';  // ID
+const OFFICE_IP = '80.62.117.5';        // DK
+const ATTACKER_IP = '45.142.212.61';   // MD
+const ATTACKER_IP2 = '103.75.190.14';  // MY
 const AZURE_IP = '20.56.88.101';
 const M365_IP = '52.96.42.18';
 const KEEPIT_IP = '185.221.245.37';
@@ -129,7 +129,7 @@ for (const p of purview) {
 }
 
 // --- Entra sign-in CSV (interactive) mirrors the STS logons with Microsoft's geo ---
-const GEO: Record<string, string> = { [OFFICE_IP]: 'Copenhagen, Capital Region, DK', [ATTACKER_IP]: 'Lagos, Lagos, NG', [ATTACKER_IP2]: 'Jakarta, Jakarta, ID', [AZURE_IP]: 'Amsterdam, North Holland, NL' };
+const GEO: Record<string, string> = { [OFFICE_IP]: 'Copenhagen, Capital Region, DK', [ATTACKER_IP]: 'Chișinău, Chișinău, MD', [ATTACKER_IP2]: 'Kuala Lumpur, Kuala Lumpur, MY', [AZURE_IP]: 'Amsterdam, North Holland, NL' };
 const entraHead = ['Date (UTC)', 'Request ID', 'User agent', 'Correlation ID', 'User ID', 'User', 'Username', 'User type', 'Cross tenant access type', 'Incoming token type', 'Authentication Protocol', 'Unique token identifier', 'Original transfer method', 'Client credential type', 'Token Protection - Sign In Session', 'Application', 'Application ID', 'App owner tenant ID', 'Resource', 'Resource ID', 'Resource tenant ID', 'Resource owner tenant ID', 'Home tenant ID', 'Home tenant name', 'IP address', 'Location', 'Status', 'Sign-in error code', 'Failure reason', 'Client app', 'Device ID', 'Browser', 'Operating System', 'Compliant', 'Managed', 'Join Type', 'Multifactor authentication result', 'Multifactor authentication auth method', 'Multifactor authentication auth detail', 'Authentication requirement', 'Sign-in identifier', 'Session ID', 'IP address (seen by resource)', 'Through Global Secure Access', 'Global Secure Access IP address', 'Autonomous system number', 'Flagged for review', 'Token issuer type', 'Token issuer name', 'Latency', 'Conditional Access', 'Managed Identity type', 'Associated Resource Id', 'Federated Token Id', 'Federated Token Issuer'];
 const entraLines = [entraHead.join(',')];
 const entraJson: unknown[] = [];
@@ -151,7 +151,7 @@ const traceLines = ['origin_timestamp_utc,sender_address,recipient_status,messag
 for (let day = 0; day < DAYS; day++) for (let i = 0; i < 25; i++) {
   const from = rnd() < 0.5 ? pick(USERS) : pick(['newsletter@vendor.example', 'support@supplier.example', 'noreply@bank.example']);
   const to = pick(USERS);
-  traceLines.push([t(day, 7 + Math.floor(rnd() * 10)).toISOString().replace(/\.\d{3}Z$/, '.0000000Z'), from, `${to}##Receive, Deliver`, pick(SUBJECTS), String(3000 + Math.floor(rnd() * 200000)), `<${guid()}@${from.split('@')[1]}>`, guid(), from.endsWith(DOMAIN) ? OFFICE_IP : '203.0.113.' + Math.floor(rnd() * 200), from.endsWith(DOMAIN) ? 'Originating' : 'Incoming', '', 'Normal'].map(csvCell).join(','));
+  traceLines.push([t(day, 7 + Math.floor(rnd() * 10)).toISOString().replace(/\.\d{3}Z$/, '.0000000Z'), from, `${to}##Receive, Deliver`, pick(SUBJECTS), String(3000 + Math.floor(rnd() * 200000)), `<${guid()}@${from.split('@')[1]}>`, guid(), from.endsWith(DOMAIN) ? OFFICE_IP : '5.186.' + (100 + Math.floor(rnd() * 50)) + '.' + Math.floor(rnd() * 200), from.endsWith(DOMAIN) ? 'Originating' : 'Incoming', '', 'Normal'].map(csvCell).join(','));
 }
 traceLines.push([t(6, 8, 58).toISOString().replace(/\.\d{3}Z$/, '.0000000Z'), 'docs@fabrikam-docs-share.com', USERS.slice(2, 8).map((u) => `${u}##Receive, Deliver`).join(';'), 'Shared document: Payment approval needed', '18220', `<camp-${PHISH_NMID}@fabrikam-docs-share.com>`, PHISH_NMID, '91.219.236.9', 'Incoming', '', 'Normal'].map(csvCell).join(','));
 // forwarded copies leaving via the rule

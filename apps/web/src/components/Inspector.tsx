@@ -74,7 +74,7 @@ function Body({ e, wsId, workspace, onPivot }: { e: EventDetail; wsId: string; w
   return (
     <div>
       <dl className="facts">
-        <Fact k="User" v={e.userUpn ? <span className="row gap-4"><Link to={`/w/${wsId}/people/${encodeURIComponent(e.userUpn)}`}>{e.userUpn}</Link>{e.userType && <span className="small muted">({e.userType})</span>}</span> : null} />
+        <Fact k="User" v={e.userUpn ? <span className="row gap-4"><Link to={`/w/${wsId}/investigate/user/${encodeURIComponent(e.userUpn)}`}>{e.userUpn}</Link>{e.userType && <span className="small muted">({e.userType})</span>}</span> : null} />
         <Fact k={e.kind === 'mail' || e.kind === 'msg' ? 'Counterpart / mailbox' : 'Counterpart'} v={e.counterpart} />
         <Fact k="Result" v={<ResultCell result={e.result} failed={e.failed} />} />
         <Fact k="Client IP" v={e.clientIp ? <span className="row row-wrap gap-4"><span className="mono">{e.clientIp}</span><CountryBadge cc={e.ipCountry} alert={unexpected} />{e.ipCountry && <span className={unexpected ? 'tone-crit' : 'muted'}>{countryName(e.ipCountry)}{unexpected ? ' — outside expected countries' : ''}</span>}<OwnerBadge owner={e.ipOwner} name={e.ipOwnerName} />{e.ipOwner && <span className="muted small">{e.ipOwnerName ?? OWNER_LONG[e.ipOwner] ?? e.ipOwner}</span>}</span> : null} />
@@ -100,7 +100,7 @@ function Body({ e, wsId, workspace, onPivot }: { e: EventDetail; wsId: string; w
         {(e.messageId || e.networkMessageId) && <button className="btn btn-sm" onClick={() => onPivot(e.networkMessageId ? { nmid: e.networkMessageId, mid: null, session: null, user: null } : { mid: e.messageId, nmid: null, session: null, user: null })}>{fmtInt(msgCount)} events for the same message</button>}
         {e.correlationId && corrCount > 1 && <button className="btn btn-sm" onClick={() => onPivot({ q: `correlation:${e.correlationId}` })}>{fmtInt(corrCount)} with this correlation</button>}
         {e.userUpn && e.ts && <button className="btn btn-sm" onClick={hourAround}>±1 hour for this user</button>}
-        {e.userUpn && <button className="btn btn-sm" onClick={() => navigate(`/w/${wsId}/people/${encodeURIComponent(e.userUpn!)}`)}><IconUser size={13} /> User profile</button>}
+        {e.userUpn && <button className="btn btn-sm" onClick={() => navigate(`/w/${wsId}/investigate/user/${encodeURIComponent(e.userUpn!)}`)}><IconUser size={13} /> Investigate user</button>}
         {e.clientIp && <button className="btn btn-sm" onClick={() => onPivot({ ip: e.clientIp, session: null })}>All from {e.clientIp}</button>}
         {e.clientIp && <button className="btn btn-sm" disabled={alreadyExcluded || update.isPending} onClick={addExclusion} title={alreadyExcluded ? 'Already in the exclusion list' : 'Append this IP to the workspace exclusion rules'}>{alreadyExcluded ? 'IP already excluded' : 'Add IP to exclusions'}</button>}
       </div>

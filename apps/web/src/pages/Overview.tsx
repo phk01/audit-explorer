@@ -37,7 +37,7 @@ export function OverviewPage() {
     <div className="page">
       <div className="page-head">
         <div><h1>{workspace.name}</h1><p>{workspace.tenantDomains.length ? workspace.tenantDomains.join(', ') : 'Overview'}{s?.lastImportAt ? ` · last import ${t.relative(s.lastImportAt)}` : ''}</p></div>
-        <Link className="btn" to={`/w/${wsId}/activity`}>Open Global Activity</Link>
+        <div className="row"><Link className="btn" to={`/w/${wsId}`}>Investigate</Link><Link className="btn" to={`/w/${wsId}/activity`}>Open Global Activity</Link></div>
       </div>
 
       <div className="grid grid-kpi mb-16">

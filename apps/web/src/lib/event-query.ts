@@ -88,5 +88,13 @@ export function activeChips(url: Record<string, string>): { key: string; value: 
   return out;
 }
 
+/** Global Activity URL that reproduces an EventQuery (used by "Show evidence" links on findings). */
+export function evidenceUrl(wsId: string, q: EventQuery | null | undefined, extra?: Record<string, string | null | undefined>): string {
+  const sp = new URLSearchParams();
+  for (const [k, v] of Object.entries({ ...(q ?? {}), ...(extra ?? {}) })) if (v !== undefined && v !== null && v !== '') sp.set(k, String(v));
+  const s = sp.toString();
+  return `/w/${wsId}/activity${s ? `?${s}` : ''}`;
+}
+
 /** Keys that are considered "filters" for the clear-all button (not UI state). */
 export const FILTER_URL_KEYS: string[] = [...SCALAR_KEYS, ...LIST_KEYS, ...Object.keys(TERM_KEYS), 'q', 'exclusions'];

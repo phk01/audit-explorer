@@ -18,6 +18,7 @@ import { eventRoutes } from './routes/events.js';
 import { importRoutes } from './routes/imports.js';
 import { peopleRoutes } from './routes/people.js';
 import { coverageRoutes } from './routes/coverage.js';
+import { investigateRoutes } from './routes/investigate.js';
 
 export async function buildServer() {
   const app = Fastify({
@@ -56,6 +57,7 @@ export async function buildServer() {
     await api.register(importRoutes);
     await api.register(peopleRoutes);
     await api.register(coverageRoutes);
+    await api.register(investigateRoutes);
   }, { prefix: '/api' });
 
   // Production: serve the built SPA from the same origin (no CORS, one container).

@@ -24,7 +24,7 @@ export function PeoplePage() {
   const t = useTime();
   const navigate = useNavigate();
   const expected = new Set(workspace.expectedCountries.map((c) => c.toUpperCase()));
-  const open = (p: Person) => navigate(`/w/${wsId}/people/${encodeURIComponent(p.upn)}`);
+  const open = (p: Person) => navigate(`/w/${wsId}/investigate/user/${encodeURIComponent(p.upn)}`);
 
   const th = (id: Sort, label: string, right = false) => <th scope="col" className={`sortable ${sort === id ? 'sorted' : ''} ${right ? 'is-right' : ''}`} aria-sort={sort === id ? 'descending' : 'none'} onClick={() => setUrl({ sort: id })}>{label}{sort === id ? ' ▾' : ''}</th>;
 

@@ -1,51 +1,38 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import type { FacetBucket } from '@audit/core';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import type { FacetBucket, PersonDetail } from '@audit/core';
 import { useWorkspaceCtx } from './WorkspaceShell';
-import { usePerson } from '../lib/queries';
 import { useTime } from '../lib/time';
 import { fmtInt } from '../lib/format';
 import { countryName } from '../lib/countries';
-import { BarList, ErrorState, Kpi, Section, Skeleton } from '../components/Basics';
+import { BarList, Kpi, Section, Skeleton } from '../components/Basics';
 import { Histogram } from '../components/Histogram';
 import { Heatmap } from '../components/Heatmap';
 import { SimpleTable } from '../components/DataTable';
-import { CountryBadge, OwnerBadge, PersonKindPill, SourceChip, groupLabel } from '../components/Badges';
+import { CountryBadge, OwnerBadge, groupLabel } from '../components/Badges';
 import { friendly } from './Overview';
 
+/** /people/:upn now lives on the investigation page (verdict first, statistics below). */
 export function PersonPage() {
-  const { wsId, workspace } = useWorkspaceCtx();
+  const { wsId } = useWorkspaceCtx();
   const { upn: raw = '' } = useParams();
-  const upn = decodeURIComponent(raw);
-  const p = usePerson(wsId, upn);
+  return <Navigate to={`/w/${wsId}/investigate/user/${encodeURIComponent(decodeURIComponent(raw))}`} replace />;
+}
+
+/** The statistics body of a person: KPIs, activity histogram, heatmap, IPs, clients, facets. Embedded in the user investigation page. */
+export function PersonBody({ d, upn, loading }: { d: PersonDetail | null | undefined; upn: string; loading?: boolean }) {
+  const { wsId, workspace } = useWorkspaceCtx();
   const t = useTime();
   const navigate = useNavigate();
   const expected = new Set(workspace.expectedCountries.map((c) => c.toUpperCase()));
   const act = (params: Record<string, string>) => `/w/${wsId}/activity?${new URLSearchParams({ user: upn, ...params }).toString()}`;
   const go = (params: Record<string, string>) => navigate(act(params));
-
-  if (p.isError) return <div className="page"><ErrorState error={p.error} retry={() => p.refetch()} /><Link className="btn" to={`/w/${wsId}/people`}>Back to People</Link></div>;
-  const d = p.data;
-  const initials = upn.split('@')[0].split(/[._-]/).map((s) => s[0]?.toUpperCase() ?? '').join('').slice(0, 2) || '?';
   const bar = (items: FacetBucket[] | undefined, key: string, render?: (b: FacetBucket) => React.ReactNode) => (d ? <BarList items={items ?? []} onClick={(it) => go({ [key]: it.value })} render={render} /> : <Skeleton h={100} />);
 
-  return (
-    <div className="page">
-      <div className="page-head">
-        <div className="person-head">
-          <span className="avatar" aria-hidden>{initials}</span>
-          <div>
-            <h1 style={{ wordBreak: 'break-all' }}>{upn}</h1>
-            <div className="row row-wrap small muted" style={{ marginTop: 4 }}>
-              {d && <PersonKindPill kind={d.kind} />}
-              {d && <span>first seen {t.dateTime(d.firstSeen)} · last seen {t.dateTime(d.lastSeen)} ({t.relative(d.lastSeen)})</span>}
-              {d && <span className="chips">{d.sources.map((s) => <SourceChip key={s} id={s} />)}</span>}
-            </div>
-          </div>
-        </div>
-        <div className="row"><Link className="btn" to={`/w/${wsId}/people`}>All people</Link><Link className="btn btn-primary" to={act({})}>View all events</Link></div>
-      </div>
+  if (!d && !loading) return <div className="muted small">No per-person statistics are available for this account.</div>;
 
-      <div className="grid grid-kpi mb-16">
+  return (
+    <div className="stack stack-16">
+      <div className="grid grid-kpi">
         {!d ? Array.from({ length: 6 }).map((_, i) => <div className="kpi" key={i}><Skeleton w="50%" h={11} /><Skeleton w="60%" h={26} style={{ marginTop: 6 }} /></div>) : (
           <>
             <Kpi label="Events" value={fmtInt(d.events)} to={act({})} />
@@ -58,16 +45,16 @@ export function PersonPage() {
         )}
       </div>
 
-      <div className="grid grid-2 mb-16">
+      <div className="grid grid-2">
         <Section title="Activity" right={d ? <span>per {d.histogram.unit}</span> : null}>
-          <Histogram data={d?.histogram} loading={p.isPending} height={140} onBucketClick={(from, to) => go({ from, to })} />
+          <Histogram data={d?.histogram} loading={!d} height={140} onBucketClick={(from, to) => go({ from, to })} />
         </Section>
         <Section title="Weekday × hour">
           {d ? <Heatmap data={d.hourHeatmap} /> : <Skeleton h={160} />}
         </Section>
       </div>
 
-      <div className="person-tables mb-16">
+      <div className="person-tables">
         <Section title="Client IPs">
           {d ? <SimpleTable ariaLabel="Client IPs" dense rows={d.ips} rowKey={(r) => r.ip} onRowClick={(r) => go({ ip: r.ip })} columns={[
             { id: 'ip', header: 'IP', width: 'auto', cell: (r) => <span className="ip-cell"><span className="mono">{r.ip}</span><CountryBadge cc={r.country} alert={!!r.country && expected.size > 0 && !expected.has(r.country.toUpperCase()) && !r.owner} /><OwnerBadge owner={r.owner} name={r.ownerName} /></span> },
@@ -88,7 +75,7 @@ export function PersonPage() {
         </Section>
       </div>
 
-      <div className="grid grid-3 mb-16">
+      <div className="grid grid-3">
         <Section title="Operations">{bar(d?.operations, 'op', (b) => <span className="op-pair"><span className="op-friendly">{b.label ?? friendly(b.value)}</span><span className="op-raw">{b.value}</span></span>)}</Section>
         <Section title="Workloads">{bar(d?.workloads, 'workload')}</Section>
         <Section title="Workload groups">{bar(d?.groups, 'group', (b) => <span className="ellipsis">{b.label ?? groupLabel(b.value)}</span>)}</Section>
