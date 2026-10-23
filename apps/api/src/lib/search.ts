@@ -17,10 +17,27 @@ const FIELD_COLUMNS: Record<QueryField, string> = {
   usertype: 'e.user_type', correlation: 'e.correlation_id', sensitive: 'e.sensitive_family',
 };
 
+/** Columns the importer already stores lower-cased, so equality can use their B-tree indexes directly. */
+const LOWERCASED = new Set(['e.user_upn', 'e.counterpart', 'e.operation_key', 'e.message_id', 'e.network_message_id', 'e.source', 'e.kind', 'e.workload_group', 'e.ip_owner']);
+const EXACT = new Set(['e.client_ip', 'e.session_id', 'e.correlation_id', 'e.source_record_id', 'e.import_id::text']);
+
 /** Columns compared case-insensitively with exact or glob semantics. */
 function textMatch(col: string, value: string, b: SqlBuilder): string {
   if (hasGlob(value)) return `${col} ilike ${b.add(globToLike(value))} escape '\\'`;
+  if (LOWERCASED.has(col)) return `${col} = ${b.add(value.toLowerCase())}`;
+  if (EXACT.has(col)) return `${col} = ${b.add(value)}`;
+  if (col === 'e.ip_country') return `${col} = ${b.add(value.toUpperCase())}`;
   return `lower(${col}) = ${b.add(value.toLowerCase())}`;
+}
+
+/** Index-assisted pre-filter for raw-path terms: the first path segment must exist as a top-level key (GIN on ae_keys). */
+function rawKeyPrefilter(seg: string, b: SqlBuilder): string {
+  return `ae_keys(e.raw) @> array[${b.add(seg.toLowerCase())}]::text[]`;
+}
+
+/** Split free text the same way the search vector was built (see migrations): on @ . / : _ - \ and whitespace. */
+export function searchWords(v: string): string[] {
+  return v.split(/[\s@./:_\-\\,;()\[\]{}"'<>=]+/).map((w) => w.replace(/[':&|!*]/g, '')).filter((w) => w.length >= 2);
 }
 
 function cidr(col: string, value: string, b: SqlBuilder): string | null {
@@ -37,7 +54,9 @@ function termSql(t: Term, b: SqlBuilder): string {
   let sql: string;
   if (t.path) {
     const p = b.add(t.path);
-    sql = t.value === '*' ? `ae_prop(e.raw, ${p}::text[]) is not null` : hasGlob(t.value) ? `ae_prop(e.raw, ${p}::text[]) ilike ${b.add(globToLike(t.value))} escape '\\'` : `lower(ae_prop(e.raw, ${p}::text[])) = ${b.add(t.value.toLowerCase())}`;
+    const pre = rawKeyPrefilter(t.path[0], b);
+    const cond = t.value === '*' ? `ae_prop(e.raw, ${p}::text[]) is not null` : hasGlob(t.value) ? `ae_prop(e.raw, ${p}::text[]) ilike ${b.add(globToLike(t.value))} escape '\\'` : `lower(ae_prop(e.raw, ${p}::text[])) = ${b.add(t.value.toLowerCase())}`;
+    sql = `(${pre} and ${cond})`;
   } else if (t.field) {
     const col = FIELD_COLUMNS[t.field];
     switch (t.field) {
@@ -66,22 +85,22 @@ function termSql(t: Term, b: SqlBuilder): string {
         sql = t.value === '*' ? `${col} is not null` : textMatch(col, t.value, b);
     }
   } else {
-    // free text: tsvector prefix match + ILIKE on the key columns; globs → ILIKE on raw text
+    // free text: the search vector holds every indexed column plus the raw record, tokenised both as-is and
+    // split on punctuation, so "gmail.com", "anna.holm" and "invoice" all hit the GIN index.
     const v = t.value;
     if (hasGlob(v) && !t.quoted) {
+      const words = searchWords(v.replace(/[*?]/g, ' '));
       const like = b.add('%' + globToLike(v) + '%');
-      sql = `(e.raw::text ilike ${like} escape '\\' or e.user_upn ilike ${like} escape '\\' or e.item ilike ${like} escape '\\')`;
+      const tsq = words.length ? `e.search @@ to_tsquery('simple', ${b.add(words.map((w) => `'${w.replace(/'/g, "''")}':*`).join(' & '))}) and ` : '';
+      sql = `(${tsq}e.raw::text ilike ${like} escape '\\')`;
     } else {
-      const words = v.split(/\s+/).filter(Boolean).map((w) => w.replace(/[':&|!()<>\\]/g, ' ').trim()).filter(Boolean);
-      const tsq = words.length ? words.map((w) => `'${w.replace(/'/g, "''")}':*`).join(' & ') : null;
-      const like = b.add('%' + v.replace(/[\\%_]/g, (c) => '\\' + c) + '%');
-      const parts = [
-        tsq ? `e.search @@ to_tsquery('simple', ${b.add(tsq)})` : null,
-        `e.user_upn ilike ${like} escape '\\'`, `e.item ilike ${like} escape '\\'`, `e.detail ilike ${like} escape '\\'`, `e.operation ilike ${like} escape '\\'`,
-        `e.client_ip ilike ${like} escape '\\'`, `e.counterpart ilike ${like} escape '\\'`, `e.object_id ilike ${like} escape '\\'`,
-        t.quoted || v.length >= 3 ? `e.raw::text ilike ${like} escape '\\'` : null,
-      ].filter(Boolean);
-      sql = `(${parts.join(' or ')})`;
+      const words = searchWords(v);
+      if (!words.length) { sql = `e.raw::text ilike ${b.add('%' + v.replace(/[\\%_]/g, (c) => '\\' + c) + '%')} escape '\\'`; }
+      else {
+        const tsq = `e.search @@ to_tsquery('simple', ${b.add(words.map((w) => `'${w.replace(/'/g, "''")}':*`).join(' & '))})`;
+        // quoted phrases must also appear verbatim; the ILIKE only runs on rows the index already matched
+        sql = t.quoted ? `(${tsq} and e.raw::text ilike ${b.add('%' + v.replace(/[\\%_]/g, (c) => '\\' + c) + '%')} escape '\\')` : tsq;
+      }
     }
   }
   return t.negate ? `not coalesce(${sql}, false)` : sql;

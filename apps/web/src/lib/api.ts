@@ -120,23 +120,53 @@ export const endpoints = {
 };
 
 /** Upload files with XHR so we get upload progress. */
-export function uploadImports(workspaceId: string, files: File[], opts: { force?: boolean; onProgress?: (loaded: number, total: number) => void; signal?: AbortSignal }): Promise<UploadResult> {
-  return new Promise((resolve, reject) => {
-    const fd = new FormData();
-    for (const f of files) fd.append('files', f, f.name);
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', `/api/workspaces/${workspaceId}/imports${qs({ force: opts.force ? '1' : undefined })}`);
-    xhr.withCredentials = true;
-    xhr.responseType = 'json';
-    xhr.upload.onprogress = (e) => { if (e.lengthComputable) opts.onProgress?.(e.loaded, e.total); };
-    xhr.onerror = () => reject(new ApiError(0, 'network', 'Upload failed.'));
-    xhr.onabort = () => reject(new ApiError(0, 'aborted', 'Upload cancelled.'));
-    xhr.onload = () => {
-      if (xhr.status === 401) { for (const fn of unauthListeners) fn(); reject(new ApiError(401, 'unauthenticated', 'Sign in required.')); return; }
-      if (xhr.status >= 200 && xhr.status < 300) resolve(xhr.response as UploadResult);
-      else { const r = (xhr.response ?? {}) as { error?: string; message?: string }; reject(new ApiError(xhr.status, r.error ?? 'error', r.message ?? `Upload failed (${xhr.status}).`)); }
-    };
-    opts.signal?.addEventListener('abort', () => xhr.abort());
-    xhr.send(fd);
-  });
+/**
+ * Upload files as resumable 32 MB chunks (the Coolify/Cloudflare path rejects large single requests),
+ * then ask the server to finalise each one. Files are processed one after another; a failed chunk is retried.
+ */
+export async function uploadImports(workspaceId: string, files: File[], opts: { force?: boolean; onProgress?: (loaded: number, total: number) => void; signal?: AbortSignal }): Promise<UploadResult> {
+  const total = files.reduce((a, f) => a + f.size, 0);
+  let done = 0;
+  const result: UploadResult = { created: [], skipped: [] };
+  const ensureAuth = (r: Response) => { if (r.status === 401) { for (const fn of unauthListeners) fn(); throw new ApiError(401, 'unauthenticated', 'Sign in required.'); } };
+  const fail = async (r: Response, fallback: string) => { const b = (await r.json().catch(() => ({}))) as { error?: string; message?: string }; throw new ApiError(r.status, b.error ?? 'error', b.message ?? fallback); };
+
+  for (const file of files) {
+    if (opts.signal?.aborted) throw new ApiError(0, 'aborted', 'Upload cancelled.');
+    const init = await fetch(`/api/workspaces/${workspaceId}/uploads`, { method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ fileName: file.name, fileSize: file.size }), signal: opts.signal });
+    ensureAuth(init);
+    if (init.status === 400 || init.status === 413) { const b = (await init.json().catch(() => ({}))) as { message?: string }; result.skipped.push({ fileName: file.name, reason: b.message ?? `Upload rejected (${init.status}).` }); done += file.size; opts.onProgress?.(done, total); continue; }
+    if (!init.ok) await fail(init, `Could not start the upload (${init.status}).`);
+    const { uploadId, chunkSize } = (await init.json()) as { uploadId: string; chunkSize: number };
+
+    let offset = 0, index = 0;
+    while (offset < file.size) {
+      const blob = file.slice(offset, Math.min(offset + chunkSize, file.size));
+      let attempt = 0;
+      for (;;) {
+        if (opts.signal?.aborted) throw new ApiError(0, 'aborted', 'Upload cancelled.');
+        const r = await fetch(`/api/workspaces/${workspaceId}/uploads/${uploadId}/chunks/${index}`, { method: 'PUT', credentials: 'include', headers: { 'content-type': 'application/octet-stream' }, body: blob, signal: opts.signal }).catch(() => null);
+        if (r) {
+          ensureAuth(r);
+          if (r.ok) break;
+          if (r.status === 409) { const b = (await r.json()) as { received: number }; offset = b.received; index = Math.floor(offset / chunkSize); break; }
+          if (attempt >= 4) await fail(r, `Chunk upload failed (${r.status}).`);
+        } else if (attempt >= 4) throw new ApiError(0, 'network', 'Upload failed: network error.');
+        attempt++;
+        await new Promise((res) => setTimeout(res, 1000 * attempt));
+      }
+      offset = Math.min(offset + chunkSize, file.size);
+      index++;
+      opts.onProgress?.(done + offset, total);
+    }
+    const fin = await fetch(`/api/workspaces/${workspaceId}/uploads/${uploadId}/complete${qs({ force: opts.force ? '1' : undefined })}`, { method: 'POST', credentials: 'include', signal: opts.signal });
+    ensureAuth(fin);
+    if (!fin.ok) await fail(fin, `Could not finish the upload (${fin.status}).`);
+    const out = (await fin.json()) as UploadResult;
+    result.created.push(...out.created);
+    result.skipped.push(...out.skipped);
+    done += file.size;
+    opts.onProgress?.(done, total);
+  }
+  return result;
 }

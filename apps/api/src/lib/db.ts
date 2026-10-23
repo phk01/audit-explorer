@@ -10,7 +10,7 @@ types.setTypeParser(20, (v) => Number(v));
 types.setTypeParser(1184, (v) => new Date(v).toISOString());
 types.setTypeParser(1114, (v) => new Date(v + 'Z').toISOString());
 
-export const pool = new Pool({ connectionString: config.DATABASE_URL, max: 12, application_name: 'audit-explorer', options: '-c timezone=UTC' });
+export const pool = new Pool({ connectionString: config.DATABASE_URL, max: 12, application_name: 'audit-explorer', options: '-c timezone=UTC -c work_mem=64MB' });
 
 pool.on('error', (err) => { console.error('pg pool error', err); });
 

@@ -92,15 +92,29 @@ export async function workspaceRoutes(app: FastifyInstance): Promise<void> {
     if (!ws) return reply.code(404).send({ error: 'not_found', message: 'Workspace not found.' });
     const q = req.query as { from?: string; to?: string; exclusions?: 'on' | 'off' };
     const { where, params } = compileQuery(id, { from: q.from, to: q.to, exclusions: q.exclusions }, exclusionsOf(ws));
-    const top = async (col: string, extra = '') => (await query<FacetBucket>(`select ${col} as value, count(*)::int as count ${extra} from events e where ${where} and ${col} is not null group by ${col} order by count desc limit 10`, params));
-    const [stats, hist, topUsers, topOperations, topIpsRaw, countries, groups, sources, agg, recent] = await Promise.all([
-      statsFor([id]), histogram(where, params, 'auto'),
-      top('e.user_upn'), top('e.operation'),
-      query<FacetBucket & { country: string | null; owner: string | null }>(`select e.client_ip as value, count(*)::int as count, min(e.ip_country) as country, min(e.ip_owner) as owner from events e where ${where} and e.client_ip is not null group by e.client_ip order by count desc limit 10`, params),
-      top('e.ip_country', ''), top('e.workload_group'), top('e.source'),
+    // One grouping-sets pass for all the "top N" panels, plus the failed/sensitive counters.
+    const cols = ['user_upn', 'operation', 'client_ip', 'ip_country', 'workload_group', 'source'] as const;
+    const groupRows = query<Record<string, string | number | null>>(
+      `select ${cols.map((c) => `e.${c}`).join(', ')}, count(*)::int as n, grouping(${cols.map((c) => `e.${c}`).join(', ')}) as g
+         from events e where ${where} group by grouping sets (${cols.map((c) => `(e.${c})`).join(', ')})`, params);
+    const [stats, hist, rows, agg, recent] = await Promise.all([
+      statsFor([id]), histogram(where, params, 'auto'), groupRows,
       one<{ failed: number; sensitive: number }>(`select count(*) filter (where e.failed)::int as failed, count(*) filter (where e.sensitive_family is not null)::int as sensitive from events e where ${where}`, params),
       query<Record<string, unknown>>('select * from imports where workspace_id = $1 order by created_at desc limit 5', [id]),
     ]);
+    const buckets: Record<string, FacetBucket[]> = Object.fromEntries(cols.map((c) => [c, []]));
+    for (const r of rows) {
+      const g = Number(r.g);
+      const idx = cols.findIndex((_, i) => ((g >> (cols.length - 1 - i)) & 1) === 0);
+      if (idx < 0) continue;
+      const v = r[cols[idx]];
+      if (v != null) buckets[cols[idx]].push({ value: String(v), count: Number(r.n) });
+    }
+    const top = (c: (typeof cols)[number], n = 10) => buckets[c].sort((a, b) => b.count - a.count).slice(0, n);
+    const topUsers = top('user_upn'), topOperations = top('operation'), countries = top('ip_country'), groups = top('workload_group'), sources = top('source');
+    const ipTop = top('client_ip');
+    const ipMeta = ipTop.length ? await query<{ ip: string; country: string | null; owner: string | null }>(`select client_ip as ip, min(ip_country) as country, min(ip_owner) as owner from events e where e.workspace_id = $1 and e.client_ip = any($2::text[]) group by client_ip`, [id, ipTop.map((b) => b.value)]) : [];
+    const topIpsRaw = ipTop.map((b) => { const m = ipMeta.find((x) => x.ip === b.value); return { ...b, country: m?.country ?? null, owner: m?.owner ?? null }; });
     const res: Overview = {
       stats: stats.get(id)!, histogram: hist, topUsers, topOperations: topOperations.map((b) => ({ ...b, label: friendlyOperation(b.value) })), topIps: topIpsRaw,
       countries: countries.map((c) => ({ ...c, label: countryName(c.value) })), groups, sources,

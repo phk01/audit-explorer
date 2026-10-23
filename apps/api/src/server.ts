@@ -32,6 +32,8 @@ export async function buildServer() {
   await app.register(multipart, { limits: { files: 50, fileSize: config.MAX_UPLOAD_MB * 1024 * 1024 } });
   if (!config.isProd) await app.register(cors, { origin: config.corsOrigins, credentials: true });
 
+  app.addContentTypeParser('application/octet-stream', { parseAs: 'buffer', bodyLimit: 64 * 1024 * 1024 }, (_req, body, done) => done(null, body));
+
   app.decorateRequest('user', null);
   app.addHook('onRequest', async (req) => { req.user = await userFromRequest(req); });
 

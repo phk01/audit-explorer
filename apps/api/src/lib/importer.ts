@@ -156,7 +156,7 @@ const TYPES = ['uuid', 'uuid', 'text', 'char(1)', 'text', 'timestamptz', 'text',
 const INSERT_SQL = `
   insert into events (${COLS.join(',')}, search)
   select ${COLS.map((c) => `u.${c}`).join(',')},
-         to_tsvector('simple', left(concat_ws(' ', u.user_upn, u.operation, u.item, u.detail, u.client_ip, u.object_id, u.counterpart, u.user_agent, u.message_id, u.raw::text), 200000))
+         ae_search_vector(concat_ws(' ', u.user_upn, u.operation, u.item, u.detail, u.client_ip, u.object_id, u.counterpart, u.user_agent, u.message_id, u.raw::text))
     from unnest(${COLS.map((_, i) => `$${i + 1}::${TYPES[i]}[]`).join(',')}) as u(${COLS.join(',')})
   on conflict (workspace_id, source_record_id) do nothing`;
 
@@ -277,7 +277,8 @@ export async function runImport(id: string): Promise<void> {
     await flush(true);
 
     const def = row.source && row.source !== 'unknown' ? SOURCES[row.source] : null;
-    if (def?.exportRowLimit && rowIndex >= def.exportRowLimit) warnings.unshift(`This file has ${rowIndex.toLocaleString()} rows, which is the export limit for ${def.label}. The search that produced it probably had more results — split the date range and export again.`);
+    const limits = def?.exportRowLimit ? [def.exportRowLimit, ...(row.source === 'purview' ? [1_000_000] : [])] : [];
+    if (limits.some((l) => Math.abs(rowIndex - l) <= 1)) warnings.unshift(`This file has exactly ${rowIndex.toLocaleString()} rows, which is an export limit for ${def!.label}. The search that produced it probably had more results — split the date range and export again.`);
     if (row.rows_failed) warnings.unshift(`${row.rows_failed} row(s) could not be normalised; they are listed below.`);
     if (resuming) warnings.unshift(`Resumed from row ${row.checkpoint_row.toLocaleString()} after a restart.`);
 

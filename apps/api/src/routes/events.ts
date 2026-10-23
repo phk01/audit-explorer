@@ -74,18 +74,19 @@ export async function eventRoutes(app: FastifyInstance): Promise<void> {
     const items = rows.slice(0, limit).map(toEventRow);
     const last = items[items.length - 1];
 
-    // total: exact up to 200k, otherwise planner estimate
+    // total: exact up to 20k rows, otherwise the planner's estimate (flagged approx)
     let total = 0, approx = false;
-    const cnt = await one<{ n: number }>(`select count(*)::int as n from (select 1 from events e where ${p.where} limit 200001) s`, p.params);
+    const cnt = await one<{ n: number }>(`select count(*)::int as n from (select 1 from events e where ${p.where} limit 20001) s`, p.params);
     total = cnt?.n ?? 0;
-    if (total > 200000) {
+    if (total > 20000) {
       approx = true;
       const plan = await pool.query(`explain (format json) select 1 from events e where ${p.where}`, p.params as never[]);
-      total = Number(plan.rows[0]['QUERY PLAN'][0].Plan['Plan Rows'] ?? total);
+      // never report fewer than we actually counted
+      total = Math.max(20000, Number(plan.rows[0]['QUERY PLAN'][0].Plan['Plan Rows'] ?? total));
     }
     let hidden = 0;
     if (p.exclusionClause) {
-      const h = await one<{ n: number }>(`select count(*)::int as n from (select 1 from events e where ${p.where.replace(`and not ${p.exclusionClause}`, `and ${p.exclusionClause}`)} limit 200001) s`, p.params);
+      const h = await one<{ n: number }>(`select count(*)::int as n from (select 1 from events e where ${p.where.replace(`and not ${p.exclusionClause}`, `and ${p.exclusionClause}`)} limit 20001) s`, p.params);
       hidden = h?.n ?? 0;
     }
     const page: EventPage = { items, nextCursor: more && last ? encodeCursor(last.ts, last.id) : null, total, approx, hiddenByExclusions: hidden };
@@ -96,17 +97,34 @@ export async function eventRoutes(app: FastifyInstance): Promise<void> {
     const { id } = req.params as { id: string };
     const p = await prepare(id, req.query);
     if (!p) return reply.code(404).send({ error: 'not_found', message: 'Workspace not found.' });
-    const facet = (col: string, n = 12) => query<FacetBucket>(`select ${col} as value, count(*)::int as count from events e where ${p.where} and ${col} is not null group by 1 order by 2 desc limit ${n}`, p.params);
-    const [sources, groups, workloads, operations, users, ips, countries, owners, results, kinds, recordTypes] = await Promise.all([
-      facet('e.source'), facet('e.workload_group'), facet('e.workload'), facet('e.operation', 15), facet('e.user_upn', 15), facet('e.client_ip', 12), facet('e.ip_country'), facet('e.ip_owner'), facet('e.result'), facet('e.kind'), facet('e.record_type', 15),
-    ]);
+    // One pass over the matching rows with GROUPING SETS instead of eleven separate aggregates.
+    const cols = ['source', 'workload_group', 'workload', 'operation', 'user_upn', 'client_ip', 'ip_country', 'ip_owner', 'result', 'kind', 'record_type'] as const;
+    const rows = await query<Record<string, string | number | null>>(
+      `select ${cols.map((c) => `e.${c}`).join(', ')}, count(*)::int as n, grouping(${cols.map((c) => `e.${c}`).join(', ')}) as g
+         from events e where ${p.where}
+        group by grouping sets (${cols.map((c) => `(e.${c})`).join(', ')})`, p.params);
+    // grouping() returns a bitmask with a 0 bit for the column that is NOT aggregated away
+    const buckets: Record<string, FacetBucket[]> = Object.fromEntries(cols.map((c) => [c, []]));
+    const full = (1 << cols.length) - 1;
+    for (const r of rows) {
+      const g = Number(r.g);
+      const idx = cols.findIndex((_, i) => ((g >> (cols.length - 1 - i)) & 1) === 0);
+      if (idx < 0 || g === full) continue;
+      const col = cols[idx];
+      const value = r[col];
+      if (value == null) continue;
+      buckets[col].push({ value: String(value), count: Number(r.n) });
+    }
+    const top = (c: (typeof cols)[number], n: number) => buckets[c].sort((a, b) => b.count - a.count).slice(0, n);
     const f: EventFacets = {
-      sources: sources.map((b) => ({ ...b, label: sourceLabel(b.value as never) })),
-      groups: groups.map((b) => ({ ...b, label: WORKLOAD_GROUPS[b.value as keyof typeof WORKLOAD_GROUPS]?.label ?? b.value })),
-      workloads, operations: operations.map((b) => ({ ...b, label: friendlyOperation(b.value) })), users, ips,
-      countries: countries.map((b) => ({ ...b, label: countryName(b.value) })),
-      owners: owners.map((b) => ({ ...b, label: OWNER_LABEL[b.value as IpOwnerCategory] ?? b.value })),
-      results, kinds, recordTypes,
+      sources: top('source', 12).map((b) => ({ ...b, label: sourceLabel(b.value as never) })),
+      groups: top('workload_group', 12).map((b) => ({ ...b, label: WORKLOAD_GROUPS[b.value as keyof typeof WORKLOAD_GROUPS]?.label ?? b.value })),
+      workloads: top('workload', 12),
+      operations: top('operation', 15).map((b) => ({ ...b, label: friendlyOperation(b.value) })),
+      users: top('user_upn', 15), ips: top('client_ip', 12),
+      countries: top('ip_country', 12).map((b) => ({ ...b, label: countryName(b.value) })),
+      owners: top('ip_owner', 12).map((b) => ({ ...b, label: OWNER_LABEL[b.value as IpOwnerCategory] ?? b.value })),
+      results: top('result', 12), kinds: top('kind', 12), recordTypes: top('record_type', 15),
     };
     return f;
   });
